@@ -1,64 +1,42 @@
-import 'package:flame/game/game.dart';
-import 'package:flame/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:yougame/classes/baseScreen.dart';
-import 'package:yougame/classes/screenstateEnum.dart';
-import 'package:yougame/screens/game.dart';
-import 'package:yougame/screens/welcome.dart';
+import 'package:yougame/MainApp.dart';
+import 'package:yougame/utility/setScreenSettings.dart';
 
 void main() {
-  MainApp mainApp = MainApp();
-  runApp(mainApp.widget);
+  runApp(App());
 }
 
-ScreenState screenState = ScreenState.kWelcomeScreen;
-
-class MainApp extends Game with TapDetector {
-  // Screen State to Decide Where The App is in
-
-  BaseScreen _gameScreen; // Screens
-  BaseScreen _welcomeScreen; // Screens
-
-  // Decides Screen with Screen State Enum
-  BaseScreen getActiveScreen() {
-    switch (screenState) {
-      case ScreenState.kWelcomeScreen:
-        return _welcomeScreen;
-      case ScreenState.kGameScreen:
-        return _gameScreen;
-      default:
-        return GameScreen();
-    }
-  }
-
-  // Constructor
-  MainApp() {
-    // Initialize First Page
-    screenState = ScreenState.kWelcomeScreen;
-
-    // Initialize Screens
-    _welcomeScreen = WelcomeScreen();
-    _gameScreen = GameScreen();
-  }
+class App extends StatelessWidget {
+  const App({Key key}) : super(key: key);
 
   @override
-  void render(Canvas canvas) {
-    getActiveScreen()?.render(canvas);
+  Widget build(BuildContext context) {
+    // Fullscreen & Other Utils
+    setScreenSettings();
+
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: Stack(
+          children: [
+            MainApp().widget,
+          ],
+        ),
+      ),
+    );
   }
 
-  @override
-  void update(double t) {
-    getActiveScreen()?.update();
-  }
-
-  @override
-  void resize(Size size) {
-    _welcomeScreen?.resize(size);
-    _gameScreen?.resize(size);
-  }
-
-  @override
-  void onTapDown(TapDownDetails tapDownDetails) {
-    getActiveScreen()?.onTapDown(tapDownDetails);
+  Widget myWidget() {
+    return Positioned(
+      top: 200,
+      left: 150,
+      child: Container(
+        width: 50,
+        height: 100,
+        color: Colors.teal,
+        child: Text("Hello!"),
+      ),
+    );
   }
 }

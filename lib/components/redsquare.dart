@@ -1,9 +1,15 @@
+import 'dart:async';
+
 import 'package:flame/palette.dart';
 import 'package:flutter/material.dart';
+import 'package:yougame/MainApp.dart';
 import 'package:yougame/classes/baseWidget.dart';
+import 'package:yougame/classes/screenstateEnum.dart';
 import 'package:yougame/constants/borders.dart';
 
 class RedSquare extends BaseWidget {
+  bool _isGameOver = false;
+
   // Color
   var redColor = PaletteEntry(Colors.red);
 
@@ -16,30 +22,84 @@ class RedSquare extends BaseWidget {
   double height = 0;
 
   /// Speed & Direction
-  double horizontalSpeed = 3;
+  double horizontalSpeed = 5;
   double horizontalSpeedSign = 1;
+
+  double verticalSpeed = 0;
+  double verticalSpeedSign = 1;
 
   // Screen Size
   Size size = Size(0, 0);
 
+  refreshGame() {
+    _isGameOver = false;
+
+    // Initial Position
+    xPosition = 15;
+    yPosition = size.height * 0.5;
+
+    /// Speed & Direction
+    horizontalSpeed = 5;
+    horizontalSpeedSign = 1;
+    verticalSpeed = 0;
+    verticalSpeedSign = 1;
+  }
+
+  bool isSafeY() {
+    if (yPosition > height * 2 && yPosition <= size.height - height * 2) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  bool isSafeX() {
+    if (xPosition > width * 2 && xPosition <= size.width - width * 2) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  bool isGameOver() {
+    return _isGameOver;
+  }
+
   // Find The Direction To Go
-  calculateDirection() {
-    if (xPosition < borderLeft) {
-      horizontalSpeedSign = 1;
-    } else if (xPosition >= size.width - width - borderRight) {
-      horizontalSpeedSign = -1;
+  changeDirection() {
+    if (!isSafeX()) {
+      horizontalSpeedSign *= -1;
+    }
+    if (!isSafeY()) {
+      verticalSpeedSign *= -1;
     }
   }
 
   // update Speed
   updateSpeed() {
-    if (horizontalSpeed < 1) horizontalSpeed += 0.001;
+    if (horizontalSpeed < 10) horizontalSpeed += 0.001;
+
+    if (horizontalSpeed > 5.25) {
+      verticalSpeed = 3;
+    }
+
+    if (verticalSpeed > 2) {
+      verticalSpeed += 0.005;
+    }
   }
 
   // Calculate Position
   calculatePosition() {
     // Add Current Speed with Direction Sign (+) or (-)
     xPosition += horizontalSpeed * horizontalSpeedSign;
+    yPosition += verticalSpeed * verticalSpeedSign;
+
+    if (xPosition <= -5 ||
+        xPosition >= size.width - width + 5 ||
+        yPosition <= -5 ||
+        yPosition >= size.height - height + 5) {
+      _isGameOver = true;
+    }
   }
 
   ///
@@ -68,25 +128,21 @@ class RedSquare extends BaseWidget {
 
   @override
   void onTapDown(TapDownDetails tapDownDetails, Function onPress) {
-    var tapPosition = tapDownDetails.globalPosition;
-    if (tapPosition.dx >= xPosition && tapPosition.dx < xPosition + width) {
-      if (tapPosition.dy >= yPosition && tapPosition.dy < yPosition + height) {
-        print("HEy Succes");
-
-        if (redColor.color == Colors.red) {
-          redColor = PaletteEntry(Colors.yellow);
-        } else {
-          redColor = PaletteEntry(Colors.red);
-        }
-        onPress();
-      }
-    }
+    changeDirection();
   }
 
   @override
   void update() {
-    updateSpeed();
-    calculateDirection();
-    calculatePosition();
+    if (!_isGameOver) {
+      updateSpeed();
+      calculatePosition();
+      if (isGameOver()) {
+        new Timer(Duration(milliseconds: 400), () {
+          print("You Lost");
+          screenState = ScreenState.kFinishScreen;
+          refreshGame();
+        });
+      }
+    }
   }
 }

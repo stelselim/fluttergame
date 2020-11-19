@@ -32,6 +32,8 @@ class GameScreen extends BaseScreen {
 
   @override
   void update() {
-    redSquare?.update();
+    if (!redSquare.isGameOver()) {
+      redSquare?.update();
+    }
   }
 }

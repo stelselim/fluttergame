@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:yougame/classes/baseScreen.dart';
-import 'dart:ui';
-
 import 'package:yougame/classes/screenstateEnum.dart';
 import 'package:yougame/components/iconedButton.dart';
 import 'package:yougame/components/textedButton.dart';
 import 'package:yougame/constants/paletteEntry.dart';
-import 'package:yougame/main.dart';
+import 'package:flutter/material.dart';
+import '../MainApp.dart';
 
 class WelcomeScreen extends BaseScreen {
   // Variables

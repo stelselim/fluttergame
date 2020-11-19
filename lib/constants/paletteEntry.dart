@@ -3,3 +3,4 @@ import 'package:flutter/material.dart';
 
 const green = PaletteEntry(Colors.green);
 const blue = PaletteEntry(Colors.blue);
+const black = PaletteEntry(Colors.black);
